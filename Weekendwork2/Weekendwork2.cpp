@@ -1,12 +1,19 @@
-﻿// Weekendwork2.cpp : 이 파일에는 'main' 함수가 포함됩니다. 거기서 프로그램 실행이 시작되고 종료됩니다.
+﻿
+// Weekendwork2.cpp : 이 파일에는 'main' 함수가 포함됩니다. 거기서 프로그램 실행이 시작되고 종료됩니다.
 //
 
 #include <iostream>
+#include <time.h>
+#include <random>
 #include "workheader.h"
 
 int main()
 {
-    Homework01_Run(2026, 5, 30); // 1. 윤년 반영하여 요일 계산하기 (잘못된 입력 거르는 것 포함)
+    srand(time(NULL));
+
+    // Homework01_Run(2026, 5, 32); // 1. 윤년 반영하여 요일 계산하기 (잘못된 입력 거르는 것 포함)
+
+    Homework02_Run();
 }
 
 // 프로그램 실행: <Ctrl+F5> 또는 [디버그] > [디버깅하지 않고 시작] 메뉴
