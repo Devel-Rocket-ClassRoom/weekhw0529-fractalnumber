@@ -13,6 +13,7 @@ int Homework01_Run(int Year, int Month, int Day)
     int LeapYearcount_100 = 0;
     int LeapYearcount_4 = 0;
     bool isLeapYear = false;
+
     std::string Week_counter = "기본값";
 
     if (((Year % 4 == 0) && (Year % 100 != 0)) || (Year % 400 == 0))
@@ -170,6 +171,8 @@ void Homework02_Run()
     int DealerSum = 0;
     int PlayerReveal = 2;
     int DealerReveal = 2;
+    bool blackjacked = false;
+    bool gameend = false;
 
     std::string CardList[13] = { "A","2","3","4","5","6","7","8","9","10","J","Q","K" };
 
@@ -362,7 +365,7 @@ void Homework02_Run()
     // 4. 첫 카드, 에이스 계산
 
     printf("\n\n\n");
-    printf("플레이어의 카드 2장과 딜러의 카드 1장을 공개합니다.");
+    printf("플레이어의 카드 2장과 딜러의 카드 1장을 공개합니다. 딜러의 남은 카드 1장은 최종 결과 전까지 비공개됩니다.");
     printf("\n\n");
     printf("플레이어 = [%s], [%s]   /   딜러 = [%s]", PlayerCards[0].c_str(), PlayerCards[1].c_str(), DealerCards[0].c_str());
 
@@ -370,23 +373,12 @@ void Homework02_Run()
 
 
 
-    while (PlayerSum < 21 && DealerSum < 21)
+    while (PlayerSum < 21 && DealerSum < 21 || gameend == false)
     {
-        
-
-        if ((PlayerCards[0] == "A" || PlayerCards[1] == "A") && (PlayerNumArray[0] == 10 || PlayerNumArray[1] == 10))
-        {
-            printf("\n플레이어가 블랙잭에 도달했습니다. 승리했습니다.");
-        }
-        else if ((DealerCards[0] == "A" || DealerCards[1] == "A") && (DealerNumArray[0] == 10 || DealerNumArray[1] == 10))
-        {
-            printf("\n딜러의 2번째 카드는 [%s] 입니다.", DealerCards[1].c_str());
-            printf("\n딜러가 블랙잭에 도달했습니다. 패배했습니다.");
-        }
-        else if (PlayerSum < 21 && DealerSum < 21)
+               
+        if ((PlayerSum < 21 && DealerSum < 21) && blackjacked == false && gameend == false)
         {
             printf("\n\n\n\n");
-            reinput:
             printf("현재 가지고 있는 카드의 합이 21보다 작습니다. 카드를 받으시겠습니까?\n\n1 - 예 / 2 - 아니오");
             
 
@@ -400,7 +392,23 @@ void Homework02_Run()
             printf("[%s] 카드를 하나  뽑았습니다.", PlayerCards[Round + 2].c_str());
             PlayerSum += PlayerNumArray[Round + 2];
             Round++;
-            PlayerReveal++;            
+            PlayerReveal++;
+            if (DealerSum < 17)
+            {
+                printf("\n딜러는 현재 카드의 합이 17 미만이므로 카드를 계속 받습니다.");
+                printf("\n딜러가 [%s] 카드를 하나 더 뽑았습니다.", DealerCards[Round + 2].c_str());
+                DealerSum += DealerNumArray[Round + 2];
+                Round++;
+                DealerReveal++;
+                
+
+            }
+            else
+            {
+                printf("\n딜러는 가진 카드 숫자의 합이 17 이상이므로 카드를 뽑지 않습니다.");
+                goto calculate;
+            }
+            
             
         }
         else if (dummyinput == 2)
@@ -412,19 +420,17 @@ void Homework02_Run()
                 DealerSum += DealerNumArray[Round + 2];
                 Round++;
                 DealerReveal++;
-                goto reinput;
+                
                
             }
             else
             {
-                printf("\n딜러가 가진 카드 숫자의 합이 17 이상이므로 카드를 뽑지 않습니다.");
-                goto calculate;
+                printf("\n딜러는 가진 카드 숫자의 합이 17 이상이므로 카드를 뽑지 않습니다.");                
             }
         }
         else
         {
-            printf("\n잘못된 입력. 1이나 2를 입력하세요.");
-            goto reinput;
+            printf("\n잘못된 입력. 1이나 2를 입력하세요.");            
         }
 
         calculate:
@@ -443,6 +449,7 @@ void Homework02_Run()
 
                 printf("[%s] ", DealerCards[i].c_str());
             }
+            gameend = true;
             break;
             
         }
@@ -461,7 +468,8 @@ void Homework02_Run()
 
                 printf("[%s] ", DealerCards[i].c_str());
             }
-            goto exit;
+            gameend = true;
+            break;
         }
         else if (PlayerSum > 21 && DealerSum <= 21) // 플레이어 버스트
         {
@@ -478,7 +486,9 @@ void Homework02_Run()
 
                 printf("[%s] ", DealerCards[i].c_str());
             }
-            goto exit;
+            gameend = true;
+            break;
+            
         }
         else if (PlayerSum <= 21 && DealerSum > 21) // 딜러 버스트
         {
@@ -495,7 +505,9 @@ void Homework02_Run()
 
                 printf("[%s] ", DealerCards[i].c_str());
             }
-            goto exit;
+            gameend = true;
+            break;
+            
         }
         else if ((PlayerSum <= 21 && DealerSum <= 21) && (21 - PlayerSum) == (21 - DealerSum)) // 둘다 21 이하면서 동점일때
         {
@@ -512,9 +524,27 @@ void Homework02_Run()
 
                 printf("[%s] ", DealerCards[i].c_str());
             }
-            goto exit;
+            gameend = true;
+            break;
+
+
         }
         
+        if ((PlayerCards[0] == "A" || PlayerCards[1] == "A") && (PlayerNumArray[0] == 10 || PlayerNumArray[1] == 10))
+        {
+            printf("\n플레이어가 블랙잭에 도달했습니다. 승리했습니다.");
+            blackjacked = true;
+            gameend = true;
+            break;
+        }
+        else if ((DealerCards[0] == "A" || DealerCards[1] == "A") && (DealerNumArray[0] == 10 || DealerNumArray[1] == 10))
+        {
+            printf("\n딜러의 2번째 카드는 [%s] 입니다.", DealerCards[1].c_str());
+            printf("\n딜러가 블랙잭에 도달했습니다. 패배했습니다.");
+            blackjacked = true;
+            gameend = true;
+            break;
+        }
         
         /*
         printf("\n\n\n");
@@ -533,6 +563,6 @@ void Homework02_Run()
     }
     
     
-exit:;
+
 printf("\n\n\n");
 }
